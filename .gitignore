@@ -1,0 +1,17 @@
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python (helper scripts)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Clarity Gate runtime artifacts (written into target projects, not this repo)
+.z/
