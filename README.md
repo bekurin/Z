@@ -8,10 +8,6 @@ interview, scores the *ambiguity* of your request across weighted dimensions, an
 to hand off to coding until ambiguity drops to **≤ 0.2**. When it passes, it freezes an
 immutable **spec card** you can build against.
 
-The core idea is borrowed from [ouroboros](https://github.com/Q00/ouroboros):
-**human clarity — not model capability — is the bottleneck.** Z distills that single
-insight into one focused tool, with no backend, no MCP server, and no database.
-
 ---
 
 ## The idea in one formula
@@ -145,10 +141,6 @@ On pass, Z writes an **immutable** JSON artifact to your project at
 }
 ```
 
-Cards are never edited. If the spec changes, `z gate` mints a **new** card whose
-`parent_id` points at the previous one — an evolutionary lineage, à la ouroboros'
-immutable `Seed`.
-
 ---
 
 ## Install (local dev)
@@ -173,11 +165,5 @@ nudges you toward `z gate` when it sees build-intent prompts with no recent card
 always force a pass — Z records the forced score honestly on the card.
 
 ---
-
-## Credits
-
-Concept adapted from **ouroboros** (`Q00/ouroboros`) — specifically its ambiguity gate
-(`bigbang/ambiguity.py`) and immutable `Seed` / lineage model (`core/seed.py`,
-`core/lineage.py`). Z is an independent, much smaller reimagining of that one idea.
 
 MIT licensed.
