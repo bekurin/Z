@@ -1,0 +1,56 @@
+{
+  "id": "cache-order-totals-20260731T091500Z",
+  "parent_id": "add-csv-export-20260730T142210Z",
+  "mode": "brownfield",
+  "goal": "Cache computed order totals in the existing OrdersService to cut list-page latency.",
+  "constraints": [
+    "Reuse the current Redis client",
+    "Invalidate on order write",
+    "No schema changes"
+  ],
+  "success_criteria": [
+    {
+      "id": "AC1",
+      "statement": "Orders list p95 latency drops below 200ms.",
+      "verify": "Load test the /orders endpoint; p95 < 200ms over 1k requests."
+    },
+    {
+      "id": "AC2",
+      "statement": "A cached total is invalidated within one request after an order edit.",
+      "verify": "Automated: edit an order, immediately GET the list, total reflects the edit."
+    }
+  ],
+  "non_goals": [
+    "Caching anything other than order totals"
+  ],
+  "assumptions": [
+    "OrdersService.getTotals is the only writer of totals."
+  ],
+  "open_questions": [],
+  "ambiguity": {
+    "score": 0.139,
+    "threshold": 0.2,
+    "forced": false,
+    "dimensions": {
+      "goal": {
+        "weight": 0.35,
+        "clarity": 0.9
+      },
+      "constraint": {
+        "weight": 0.26,
+        "clarity": 0.85
+      },
+      "success": {
+        "weight": 0.26,
+        "clarity": 0.85
+      },
+      "context": {
+        "weight": 0.13,
+        "clarity": 0.8
+      }
+    }
+  },
+  "created_at": "2026-07-31T09:15:00Z",
+  "content_hash": "sha256:4c9fbfa8cfb4a4c90ee5c819696fc307ee733376b1a598719af2c1ba9f4d6289",
+  "frozen": true
+}

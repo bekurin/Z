@@ -1,0 +1,52 @@
+{
+  "id": "bad-ac-20260730T142210Z",
+  "parent_id": null,
+  "mode": "greenfield",
+  "goal": "Add a server-side CSV export button to the orders table for admins.",
+  "constraints": [
+    "Server-side generation",
+    "Admins only",
+    "Max 50k rows per export"
+  ],
+  "success_criteria": [
+    {
+      "id": "AC1",
+      "statement": "Admin clicks Export and downloads a CSV of the filtered orders."
+    },
+    {
+      "id": "AC2",
+      "statement": "Non-admins never see the Export button.",
+      "verify": "Automated: request as a non-admin returns 403 and the button is absent."
+    }
+  ],
+  "non_goals": [
+    "XLSX or PDF export",
+    "Scheduled/emailed exports"
+  ],
+  "assumptions": [
+    "The orders table already supports server-side filtering."
+  ],
+  "open_questions": [],
+  "ambiguity": {
+    "score": 0.16,
+    "threshold": 0.2,
+    "forced": false,
+    "dimensions": {
+      "goal": {
+        "weight": 0.4,
+        "clarity": 0.9
+      },
+      "constraint": {
+        "weight": 0.3,
+        "clarity": 0.8
+      },
+      "success": {
+        "weight": 0.3,
+        "clarity": 0.8
+      }
+    }
+  },
+  "created_at": "2026-07-30T14:22:10Z",
+  "content_hash": "sha256:a035dbdd975c5e6f1a58d1a307167d802a12e5dd7d7b8a63ecb6103f6fb90d34",
+  "frozen": true
+}

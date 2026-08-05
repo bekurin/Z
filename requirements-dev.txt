@@ -1,0 +1,4 @@
+# Dev-only. The plugin itself ships zero runtime dependencies (stdlib scripts + markdown);
+# these are just for the verification harness.
+pytest>=7.4
+jsonschema>=4.0
