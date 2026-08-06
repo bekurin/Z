@@ -46,3 +46,8 @@ Scoring anchors and dimension definitions come from
 
 - No card is written and no state changes — this is a read-only estimate.
 - Keep it to one message; if the user wants to actually drive the number down, that's `z gate`.
+- **Brownfield reuse:** if scoring against an existing codebase, reuse the per-project context
+  cache before reading source — `context_cache.py get <path>` (HIT → use the summary; MISS →
+  read, then `put` a summary). Same mechanism the gate skill documents; it is content-hash
+  keyed and advisory. `put` writes to `.z/context/`, so note this is the one side effect in an
+  otherwise read-only command.

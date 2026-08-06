@@ -32,6 +32,31 @@ ambiguity = 1 − Σ(weightᵢ × clarityᵢ)
   references current behavior, or you can see relevant source), use `brownfield` and the
   four-dimension weights; otherwise `greenfield` with three.
 
+### Context reuse (brownfield only)
+
+To score the `context` dimension you may need to read target source files. **Reuse the
+per-project context cache so you don't re-read files that have not changed.** Before reading
+a source file, consult the cache:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/context_cache.py" get <path>
+```
+
+- **HIT (exit 0):** it prints a short summary you captured on an earlier run — use that and
+  do **not** re-read the whole file.
+- **MISS (exit 3, prints `MISS`):** read the file, then store a concise summary (the class's
+  responsibility, key methods, collaborators, notable gaps) for next time:
+
+  ```bash
+  printf '%s' "<summary>" | python3 "${CLAUDE_PLUGIN_ROOT}/scripts/context_cache.py" put <path>
+  ```
+
+The cache lives at `.z/context/index.json` in the project and is keyed by each file's content
+hash, so a changed file MISSes automatically and gets re-read. It is **advisory** — if a
+cached summary lacks a detail you need, read the file anyway. A cached summary is only valid
+because you read that exact file content before; it never invents clarity. To reset the cache
+manually: `context_cache.py clear` (or `prune` to drop only stale entries).
+
 ### Step 2 — Adopt the interviewer role
 
 Read `${CLAUDE_PLUGIN_ROOT}/agents/clarity-interviewer.md` and follow its rubric, score

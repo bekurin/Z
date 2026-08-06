@@ -46,7 +46,9 @@ Per-dimension cues:
 - **success** — 0.9 needs at least one *objectively checkable* acceptance criterion (a
   command, a number, or a user action with an expected result). "It works well" is ≤ 0.3.
 - **context** (brownfield) — 0.9 means the relevant existing files/behavior are identified
-  and the change's blast radius is understood.
+  and the change's blast radius is understood. A content-hash-verified cache HIT (see the
+  gate skill's "Context reuse") counts the same as having read the file — prefer it when
+  fresh; it saves re-reading unchanged code and does not lower this rigor.
 
 ## Questioning strategy
 

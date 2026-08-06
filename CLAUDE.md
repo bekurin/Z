@@ -42,6 +42,7 @@ install.sh                    # register marketplace + install the plugin
 scripts/card_lib.py           # deterministic core: weights, math, hashing (stdlib)
 scripts/validate-card.py      # verify a card's structure, math, and hash
 scripts/gate-nudge.py         # UserPromptSubmit nudge hook
+scripts/context_cache.py      # per-project context cache (get/put/list/prune/clear)
 tests/                        # pytest verification harness (dev-only)
 ```
 
@@ -61,6 +62,11 @@ never into this plugin repo.
   `parent_id` set to the one it supersedes.
 - **No invented clarity.** Scoring must reflect what the human actually stated. Unanswered
   questions keep a dimension low — that is the whole point of the gate.
+- **The context cache is advisory and honest.** `scripts/context_cache.py` stores per-file
+  summaries under the project's `.z/context/index.json`, keyed by the file's content sha256.
+  It exists only to avoid re-reading unchanged code; it must never let a stale or unread file
+  raise the `context` score. A changed file's hash MISSes and is re-read. Reset with
+  `context_cache.py clear` / `prune`.
 - **Markdown-first.** Prefer instructions the harness executes over new runtime code. Only
   add scripts under `scripts/` for genuinely deterministic work (hashing, schema checks),
   and keep them standard-library-only so the plugin ships zero runtime dependencies.
@@ -84,6 +90,8 @@ What it pins:
 - `tests/test_gate_nudge.py` — the hook nudges only on build-intent with no card, and never
   blocks.
 - `tests/test_contract_sync.py` — the weights/threshold in the docs match `card_lib.py`.
+- `tests/test_context_cache.py` — the cache's HIT/MISS freshness by content hash, plus
+  list/prune/clear and malformed-index tolerance, run as a subprocess in a temp project.
 
 The harness does **not** test Claude's judgment of clarity scores (that is the human-in-the
 loop part); it tests everything deterministic around it.
