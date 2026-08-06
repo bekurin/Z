@@ -57,6 +57,24 @@ cached summary lacks a detail you need, read the file anyway. A cached summary i
 because you read that exact file content before; it never invents clarity. To reset the cache
 manually: `context_cache.py clear` (or `prune` to drop only stale entries).
 
+### Design knowledge (background)
+
+The project may carry durable design decisions/conventions (e.g. `api-design`,
+`cache-key-design`) under `.z/knowledge/`. **Read the relevant ones as background before
+interviewing** — an already-decided convention is a real constraint you should not re-ask
+about, and it keeps specs consistent across tasks.
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/knowledge.py" list   # topics + fresh/review/static
+```
+
+For each note relevant to the goal, read `.z/knowledge/<topic>.md`. A note with
+`status: accepted` supplies `constraint`/`context` clarity (fold it into the card's
+`constraints`/`assumptions`, e.g. "follows cache-key-design"). A `check <topic>` reporting
+`review` means the underlying code drifted from the note — treat that convention as
+uncertain and, if it bears on the goal, raise it rather than assuming it still holds. Do not
+edit knowledge notes here; they are human-owned (scaffold new ones with `knowledge.py new`).
+
 ### Step 2 — Adopt the interviewer role
 
 Read `${CLAUDE_PLUGIN_ROOT}/agents/clarity-interviewer.md` and follow its rubric, score
