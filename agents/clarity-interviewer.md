@@ -43,6 +43,9 @@ Per-dimension cues:
   orders table for admins"), not a category ("export stuff").
 - **constraint** — 0.9 needs the stack/scope boundaries, non-negotiables, and any budget or
   deadline the human cares about. "No constraints" stated explicitly can be ~0.7, not 0.9.
+  An `accepted` design-knowledge note (`.z/knowledge/`, see the gate skill) is a real,
+  pre-decided constraint — count it, and don't re-ask what it already settles. If
+  `knowledge.py check` flags it `review`, treat that convention as uncertain, not settled.
 - **success** — 0.9 needs at least one *objectively checkable* acceptance criterion (a
   command, a number, or a user action with an expected result). "It works well" is ≤ 0.3.
 - **context** (brownfield) — 0.9 means the relevant existing files/behavior are identified

@@ -51,3 +51,6 @@ Scoring anchors and dimension definitions come from
   read, then `put` a summary). Same mechanism the gate skill documents; it is content-hash
   keyed and advisory. `put` writes to `.z/context/`, so note this is the one side effect in an
   otherwise read-only command.
+- **Design knowledge:** check `.z/knowledge/` (`knowledge.py list`) for accepted conventions
+  relevant to the text (e.g. `cache-key-design`); an already-decided convention raises
+  `constraint` clarity. Read-only here — do not author or re-baseline notes from `z score`.

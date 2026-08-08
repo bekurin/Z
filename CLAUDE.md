@@ -43,6 +43,8 @@ scripts/card_lib.py           # deterministic core: weights, math, hashing (stdl
 scripts/validate-card.py      # verify a card's structure, math, and hash
 scripts/gate-nudge.py         # UserPromptSubmit nudge hook
 scripts/context_cache.py      # per-project context cache (get/put/list/prune/clear)
+scripts/knowledge.py          # durable design-knowledge store (list/check/touch/new)
+templates/knowledge/          # starter design-knowledge notes (cache-key-design, _template)
 tests/                        # pytest verification harness (dev-only)
 ```
 
@@ -67,6 +69,17 @@ never into this plugin repo.
   It exists only to avoid re-reading unchanged code; it must never let a stale or unread file
   raise the `context` score. A changed file's hash MISSes and is re-read. Reset with
   `context_cache.py clear` / `prune`.
+- **Three memory layers, distinct lifecycles.** Do not conflate them:
+  | Layer | Location | Keyed by | Lifecycle |
+  |-------|----------|----------|-----------|
+  | file summaries | `.z/context/index.json` | file content sha256 | machine-written, **auto-invalidates** |
+  | task specs | `.z/spec-cards/` | card id | **immutable** snapshot per gate |
+  | design knowledge | `.z/knowledge/*.md` | topic slug | **human-curated**, advisory staleness |
+- **Design knowledge is human-owned + advisory.** `scripts/knowledge.py` never deletes or
+  auto-writes a note's body — it only flags `review` when a note's `related_files` drift, and
+  re-baselines on `touch`. Cross-task decisions (`api-design`, `cache-key-design`) outlive any
+  single code edit, so a changed file flags review rather than invalidating the decision.
+  `templates/knowledge/` ships starters to copy into a project's `.z/knowledge/`.
 - **Markdown-first.** Prefer instructions the harness executes over new runtime code. Only
   add scripts under `scripts/` for genuinely deterministic work (hashing, schema checks),
   and keep them standard-library-only so the plugin ships zero runtime dependencies.
@@ -92,6 +105,8 @@ What it pins:
 - `tests/test_contract_sync.py` — the weights/threshold in the docs match `card_lib.py`.
 - `tests/test_context_cache.py` — the cache's HIT/MISS freshness by content hash, plus
   list/prune/clear and malformed-index tolerance, run as a subprocess in a temp project.
+- `tests/test_knowledge.py` — the design-knowledge store's advisory staleness (related-file
+  drift flags `review`, never deletes), `touch`/`new`/`list`, and the frontmatter parser.
 
 The harness does **not** test Claude's judgment of clarity scores (that is the human-in-the
 loop part); it tests everything deterministic around it.
