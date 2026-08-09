@@ -141,3 +141,93 @@ def test_check_unknown_topic_is_usage_error(project):
     result = run(project, "check", "does-not-exist")
     assert result.returncode == 2
     assert "no knowledge note" in result.stderr
+
+
+# ---- org layer (shared company knowledge) ----
+
+ORG_NOTE = """\
+---
+topic: api-design
+status: accepted
+updated_at: 2026-08-06
+---
+# API design (org standard)
+"""
+
+
+@pytest.fixture
+def org_dir(tmp_path: Path):
+    """A shared company knowledge directory outside any project."""
+    d = tmp_path / "company-knowledge"
+    d.mkdir()
+    (d / "api-design.md").write_text(ORG_NOTE, encoding="utf-8")
+    return d
+
+
+def test_config_not_set_by_default(project):
+    result = run(project, "config")
+    assert result.returncode == 0
+    assert "(not set)" in result.stdout
+
+
+def test_config_set_and_show(project, org_dir):
+    assert run(project, "config", "--source", str(org_dir)).returncode == 0
+    cfg = project / ".z" / "config.json"
+    assert cfg.is_file()
+    import json
+    assert json.loads(cfg.read_text())["knowledge_source"] == str(org_dir)
+    show = run(project, "config")
+    assert "exists" in show.stdout
+
+
+def test_org_note_listed_with_origin_and_is_static(project, org_dir):
+    run(project, "config", "--source", str(org_dir))
+    out = run(project, "list").stdout
+    assert "org" in out and "api-design" in out
+    check = run(project, "check", "api-design")
+    assert check.returncode == 0
+    assert "static" in check.stdout and "[org]" in check.stdout
+
+
+def test_project_overrides_org_for_same_topic(project, org_dir):
+    # add an org note for the same topic the project already defines
+    (org_dir / "cache-key-design.md").write_text(
+        "---\ntopic: cache-key-design\nstatus: accepted\nupdated_at: 2026-08-06\n---\n# org\n",
+        encoding="utf-8",
+    )
+    run(project, "config", "--source", str(org_dir))
+    out = run(project, "list").stdout
+    assert "overrides org" in out
+    resolved = run(project, "path", "cache-key-design").stdout.strip()
+    assert resolved == str(project / ".z" / "knowledge" / "cache-key-design.md")
+
+
+def test_path_resolves_org_note_when_no_project_note(project, org_dir):
+    run(project, "config", "--source", str(org_dir))
+    resolved = run(project, "path", "api-design").stdout.strip()
+    assert resolved == str(org_dir / "api-design.md")
+
+
+def test_org_note_is_read_only_for_touch(project, org_dir):
+    run(project, "config", "--source", str(org_dir))
+    result = run(project, "touch", "api-design")
+    assert result.returncode == 2
+    assert "read-only" in result.stderr
+
+
+def test_missing_org_source_is_ignored(project):
+    run(project, "config", "--source", "/nope/does/not/exist")
+    # only the project note remains resolvable; no crash
+    assert run(project, "list").returncode == 0
+    assert run(project, "path", "api-design").returncode == 2
+    assert run(project, "check", "cache-key-design").returncode in (0, 4)
+
+
+def test_new_creates_project_override_of_org_note(project, org_dir):
+    run(project, "config", "--source", str(org_dir))
+    created = run(project, "new", "api-design")
+    assert created.returncode == 0
+    assert "overrides the org note" in created.stdout
+    assert run(project, "path", "api-design").stdout.strip() == str(
+        project / ".z" / "knowledge" / "api-design.md"
+    )
