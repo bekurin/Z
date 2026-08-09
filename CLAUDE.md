@@ -74,12 +74,19 @@ never into this plugin repo.
   |-------|----------|----------|-----------|
   | file summaries | `.z/context/index.json` | file content sha256 | machine-written, **auto-invalidates** |
   | task specs | `.z/spec-cards/` | card id | **immutable** snapshot per gate |
-  | design knowledge | `.z/knowledge/*.md` | topic slug | **human-curated**, advisory staleness |
+  | design knowledge | org dir + `.z/knowledge/*.md` | topic slug | **human-curated**, advisory staleness |
 - **Design knowledge is human-owned + advisory.** `scripts/knowledge.py` never deletes or
   auto-writes a note's body — it only flags `review` when a note's `related_files` drift, and
   re-baselines on `touch`. Cross-task decisions (`api-design`, `cache-key-design`) outlive any
   single code edit, so a changed file flags review rather than invalidating the decision.
   `templates/knowledge/` ships starters to copy into a project's `.z/knowledge/`.
+- **Knowledge resolves in two layers.** Shared **org** knowledge is a local directory set per
+  repo in `.z/config.json` (`knowledge_source`); **project** knowledge lives in
+  `.z/knowledge/` and a project note overrides the org note of the same topic (specific >
+  general). Org notes are read-only in the consuming repo and always reported `static` —
+  advisory `related_files` staleness applies to project notes only. `knowledge.py list` shows
+  origin; `knowledge.py path <topic>` prints the resolved file; `knowledge.py config
+  --source <dir>` sets the org directory for the repo.
 - **Markdown-first.** Prefer instructions the harness executes over new runtime code. Only
   add scripts under `scripts/` for genuinely deterministic work (hashing, schema checks),
   and keep them standard-library-only so the plugin ships zero runtime dependencies.
@@ -106,7 +113,8 @@ What it pins:
 - `tests/test_context_cache.py` — the cache's HIT/MISS freshness by content hash, plus
   list/prune/clear and malformed-index tolerance, run as a subprocess in a temp project.
 - `tests/test_knowledge.py` — the design-knowledge store's advisory staleness (related-file
-  drift flags `review`, never deletes), `touch`/`new`/`list`, and the frontmatter parser.
+  drift flags `review`, never deletes), `touch`/`new`/`list`, the frontmatter parser, and the
+  org/project two-layer resolution (config, override, `path`, read-only org notes).
 
 The harness does **not** test Claude's judgment of clarity scores (that is the human-in-the
 loop part); it tests everything deterministic around it.

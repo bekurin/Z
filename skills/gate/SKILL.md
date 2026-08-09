@@ -59,21 +59,26 @@ manually: `context_cache.py clear` (or `prune` to drop only stale entries).
 
 ### Design knowledge (background)
 
-The project may carry durable design decisions/conventions (e.g. `api-design`,
-`cache-key-design`) under `.z/knowledge/`. **Read the relevant ones as background before
-interviewing** — an already-decided convention is a real constraint you should not re-ask
-about, and it keeps specs consistent across tasks.
+Durable design decisions/conventions (e.g. `api-design`, `cache-key-design`) resolve in two
+layers: shared **org** knowledge (a company directory set per repo in `.z/config.json`) and
+**project** knowledge under `.z/knowledge/`, where a project note overrides the org note of
+the same topic. **Read the relevant ones as background before interviewing** — an already
+decided convention is a real constraint you should not re-ask about, and it keeps specs
+consistent across tasks and repos.
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/knowledge.py" list   # topics + fresh/review/static
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/knowledge.py" list          # topics + origin + status
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/knowledge.py" path <topic>  # resolved file to read
 ```
 
-For each note relevant to the goal, read `.z/knowledge/<topic>.md`. A note with
-`status: accepted` supplies `constraint`/`context` clarity (fold it into the card's
-`constraints`/`assumptions`, e.g. "follows cache-key-design"). A `check <topic>` reporting
-`review` means the underlying code drifted from the note — treat that convention as
-uncertain and, if it bears on the goal, raise it rather than assuming it still holds. Do not
-edit knowledge notes here; they are human-owned (scaffold new ones with `knowledge.py new`).
+Read the file `path` prints (project wins over org). A note with `status: accepted` supplies
+`constraint`/`context` clarity (fold it into the card's `constraints`/`assumptions`, e.g.
+"follows cache-key-design"). A `check <topic>` reporting `review` means the note's
+`related_files` drifted — treat that convention as uncertain and, if it bears on the goal,
+raise it rather than assuming it still holds. Do not edit knowledge here: org notes are
+read-only in the consuming repo (change them in the company knowledge repo), and project
+notes are human-owned — scaffold with `knowledge.py new`, and override an org note by
+creating a project note of the same topic.
 
 ### Step 2 — Adopt the interviewer role
 
