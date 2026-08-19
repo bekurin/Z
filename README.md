@@ -32,13 +32,26 @@ work adds a fourth dimension, **Context**, renormalizing the weights to
 
 ## Quick start
 
-Install (local dev — registers this directory as a plugin marketplace and installs `z`):
+Install (local dev). With no argument, `install.sh` installs into every supported CLI it
+finds on your `PATH`:
 
 ```
-./install.sh
+./install.sh            # auto-detect: Claude Code and/or Codex
+./install.sh claude     # Claude Code only
+./install.sh codex      # Codex only
+./install.sh all        # both (errors if either CLI is missing)
 ```
 
-Then use the three commands:
+- **Claude Code** — registers this directory as a local plugin marketplace and installs the
+  `z` plugin. Use the commands as `z gate`, `z score`, `z card`.
+- **Codex** — Codex has no plugin marketplace, so the three skills are rendered into
+  `~/.codex/prompts/z-*.md` custom prompts (invoked as `/z-gate`, `/z-score`, `/z-card`) and
+  a managed block is added to `~/.codex/AGENTS.md`. Because Codex has no
+  `${CLAUDE_PLUGIN_ROOT}`, the skill text is copied with that path resolved to this checkout,
+  so the `scripts/*.py` helpers still run. Re-run `install.sh` after editing a skill to
+  refresh the prompts. (Honors `CODEX_HOME` if set.)
+
+Then use the three commands (`z …` in Claude Code, `/z-…` in Codex):
 
 ```
 z gate "<goal>"     # interview → score → freeze an immutable spec card (.z/spec-cards/)

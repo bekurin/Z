@@ -38,7 +38,7 @@ skills/gate/SKILL.md          # interview → score → gate → freeze card
 skills/score/SKILL.md         # one-shot score, no card
 skills/card/SKILL.md          # show latest card + lineage
 hooks/hooks.json              # (optional) build-intent nudge
-install.sh                    # register marketplace + install the plugin
+install.sh                    # install into Claude Code and/or Codex ([claude|codex|all], default auto)
 scripts/card_lib.py           # deterministic core: weights, math, hashing (stdlib)
 scripts/validate-card.py      # verify a card's structure, math, and hash
 scripts/gate-nudge.py         # UserPromptSubmit nudge hook
@@ -115,8 +115,13 @@ loop part); it tests everything deterministic around it.
 
 1. Register this directory as a local plugin marketplace and install it:
    ```
-   ./install.sh            # from inside Z/
+   ./install.sh            # from inside Z/ — auto-detects Claude Code and/or Codex
    ```
+   `install.sh` takes an optional target: `claude` (marketplace + `z` plugin), `codex`
+   (renders the skills into `~/.codex/prompts/z-*.md` and a managed block in
+   `~/.codex/AGENTS.md`), or `all`. With no argument it installs into every supported CLI on
+   `PATH`. The Codex path resolves `${CLAUDE_PLUGIN_ROOT}` to this checkout since Codex has no
+   plugin root — re-run after editing a skill to refresh the generated prompts.
 2. In a scratch project, run the flows and check behavior:
    - **Vague goal** — `z gate "make the app better"` → must NOT pass in round 1; must ask
      about the weakest dimension first.
